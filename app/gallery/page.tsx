@@ -5,37 +5,39 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { X, Heart, Download } from 'lucide-react'
+import { X, Play, Instagram } from 'lucide-react'
 import Image from 'next/image'
+import { mockInstagramData, MediaItem } from '@/lib/mock-instagram-data'
 
 gsap.registerPlugin(ScrollTrigger)
 
+
+
 export default function GalleryPage() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
+  const [loading, setLoading] = useState(true)
 
   const categories = [
-    { id: 'all', name: 'All Photos' },
-    { id: 'weddings', name: 'Weddings' },
-    { id: 'ceremonies', name: 'Ceremonies' },
-    { id: 'couples', name: 'Couples' },
-    { id: 'families', name: 'Families' }
+    { id: 'all', name: 'All Media' },
+    { id: 'photography', name: 'Photography' },
+    { id: 'videography', name: 'Videography' }
   ]
 
-  const galleryImages = [
-    { id: 1, src: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800', category: 'weddings', title: 'Beautiful Wedding Ceremony by @wedding_vibes_rp' },
-    { id: 2, src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800', category: 'ceremonies', title: 'Traditional Rituals by Priyanshu' },
-    { id: 3, src: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800', category: 'ceremonies', title: 'Sacred Moments' },
-    { id: 4, src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800', category: 'couples', title: 'Love Portrait @wedding_vibes_rp' },
-    { id: 5, src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800', category: 'families', title: 'Family Joy' },
-    { id: 6, src: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800', category: 'families', title: 'Celebration Time' },
-    { id: 7, src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=800', category: 'weddings', title: 'Wedding Bliss' },
-    { id: 8, src: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800', category: 'couples', title: 'Romantic Moments' }
-  ]
+  const filteredItems = selectedCategory === 'all' 
+    ? mediaItems 
+    : mediaItems.filter(item => 
+        selectedCategory === 'photography' ? item.type === 'IMAGE' : item.type === 'VIDEO'
+      )
 
-  const filteredImages = selectedCategory === 'all' 
-    ? galleryImages 
-    : galleryImages.filter(img => img.category === selectedCategory)
+  useEffect(() => {
+    // Simulate loading time for better UX
+    setTimeout(() => {
+      setMediaItems(mockInstagramData)
+      setLoading(false)
+    }, 1000)
+  }, [])
 
   useEffect(() => {
     gsap.fromTo('.gallery-item',
@@ -60,22 +62,22 @@ export default function GalleryPage() {
       
       <section className="pt-24 pb-20">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-serif font-bold text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-12 sm:mb-16 px-4 sm:px-0">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
               Photo Gallery
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Explore our collection of beautiful moments captured by Priyanshu Malviya
             </p>
           </div>
 
           {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-12 px-4 sm:px-0">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium text-sm sm:text-base transition-all duration-300 ${
                   selectedCategory === category.id
                     ? 'bg-primary-600 text-white shadow-lg'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-gray-700'
@@ -87,48 +89,74 @@ export default function GalleryPage() {
           </div>
 
           {/* Gallery Grid */}
-          <div className="gallery-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredImages.map((image) => (
-              <div
-                key={image.id}
-                className="gallery-item group cursor-pointer relative aspect-square overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => setSelectedImage(image.src)}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.title}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                  <Heart className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="gallery-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4 md:gap-6">
+            {loading ? (
+              Array.from({ length: 12 }).map((_, index) => (
+                <div key={index} className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+              ))
+            ) : filteredItems.length > 0 ? (
+              filteredItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="gallery-item group cursor-pointer relative aspect-square overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => setSelectedItem(item)}
+                >
+                  <Image
+                    src={item.type === 'VIDEO' ? item.thumbnail || item.url : item.url}
+                    alt={item.caption}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                    {item.type === 'VIDEO' ? (
+                      <Play className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    ) : (
+                      <Instagram className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-white font-medium text-sm">{item.caption}</p>
+                  </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-white font-medium text-sm">{image.title}</p>
-                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500 dark:text-gray-400 text-lg">No media found. Please check Instagram API configuration.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
 
       {/* Lightbox */}
-      {selectedImage && (
+      {selectedItem && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <div className="relative max-w-4xl max-h-full">
             <button
-              onClick={() => setSelectedImage(null)}
+              onClick={() => setSelectedItem(null)}
               className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
             >
               <X className="h-8 w-8" />
             </button>
-            <Image
-              src={selectedImage}
-              alt="Gallery image"
-              width={800}
-              height={600}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
-            />
+            
+            {selectedItem.type === 'VIDEO' ? (
+              <video
+                src={selectedItem.url}
+                controls
+                className="max-w-full max-h-[80vh] rounded-lg"
+                autoPlay
+              />
+            ) : (
+              <Image
+                src={selectedItem.url}
+                alt={selectedItem.caption}
+                width={800}
+                height={600}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              />
+            )}
+            
+            <p className="text-white text-center mt-4 text-lg">{selectedItem.caption}</p>
           </div>
         </div>
       )}

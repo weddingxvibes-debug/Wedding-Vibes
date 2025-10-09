@@ -25,6 +25,7 @@ module.exports = {
       fontFamily: {
         'serif': ['Playfair Display', 'serif'],
         'sans': ['Inter', 'sans-serif'],
+        'cursive': ['Dancing Script', 'cursive'],
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-in-out',

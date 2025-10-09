@@ -29,11 +29,8 @@ const Hero = () => {
     )
   }, [])
 
-  const scrollToPortfolio = () => {
-    const element = document.querySelector('#portfolio')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+  const scrollToGallery = () => {
+    window.location.href = '/gallery'
   }
 
   return (
@@ -45,7 +42,7 @@ const Hero = () => {
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         <h1 
           ref={titleRef}
-          className="text-5xl md:text-7xl font-serif font-bold text-gray-900 dark:text-white mb-6"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 leading-tight"
         >
           Capturing Your
           <span className="block text-primary-600 dark:text-primary-400">
@@ -55,27 +52,21 @@ const Hero = () => {
         
         <p 
           ref={subtitleRef}
-          className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed"
+          className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0"
         >
           Professional Indian wedding photography by Priyanshu Malviya. Capturing your unique love story through stunning visuals and timeless memories.
         </p>
 
-        <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
           <button 
-            onClick={scrollToPortfolio}
-            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+            onClick={scrollToGallery}
+            className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            View Portfolio
-          </button>
-          <button 
-            onClick={() => window.location.href = '/gallery'}
-            className="bg-gold-500 hover:bg-gold-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            Full Gallery
+            View Gallery
           </button>
           <button 
             onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
-            className="border-2 border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-600 hover:text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300"
+            className="w-full sm:w-auto border-2 border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300"
           >
             Get In Touch
           </button>

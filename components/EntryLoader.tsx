@@ -16,7 +16,7 @@ const EntryLoader = ({ onComplete }: EntryLoaderProps) => {
         setTimeout(() => {
           setIsVisible(false)
           onComplete()
-        }, 500)
+        }, 800)
       }
     })
 
@@ -32,14 +32,22 @@ const EntryLoader = ({ onComplete }: EntryLoaderProps) => {
         ease: 'back.out(1.7)'
       }
     )
+    // Animate tagline
     .fromTo('.tagline',
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-      '-=0.3'
+      { opacity: 0, y: 30, scale: 0.8 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        scale: 1,
+        duration: 0.8, 
+        ease: 'back.out(1.7)' 
+      },
+      '-=0.5'
     )
+    // Final scale and fade
     .to('.loader-content', 
-      { scale: 0.8, opacity: 0.8, duration: 0.5 },
-      '+=1'
+      { scale: 0.9, duration: 0.6 },
+      '+=0.5'
     )
     .to('.loader-bg',
       { 
@@ -56,17 +64,21 @@ const EntryLoader = ({ onComplete }: EntryLoaderProps) => {
     <div className="loader-bg fixed inset-0 z-50 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 flex items-center justify-center">
       <div className="loader-content text-center">
         <div className="mb-8">
-          <div className="text-6xl md:text-8xl font-serif font-bold text-white mb-4">
+          <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-6">
             {'Wedding Vibes'.split('').map((char, index) => (
               <span 
                 key={index} 
-                className={`letter inline-block ${char === ' ' ? 'w-4' : ''}`}
+                className={`letter inline-block ${char === ' ' ? 'w-2 sm:w-4' : ''}`}
+                style={{
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                  filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.3))'
+                }}
               >
                 {char === ' ' ? '\u00A0' : char}
               </span>
             ))}
           </div>
-          <div className="tagline text-xl md:text-2xl text-primary-100 font-light tracking-wider">
+          <div className="tagline text-lg sm:text-xl md:text-2xl text-primary-100 font-light tracking-wider">
             by Priyanshu Malviya
           </div>
         </div>
