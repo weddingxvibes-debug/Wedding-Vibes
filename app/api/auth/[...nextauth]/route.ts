@@ -15,27 +15,24 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
-        session.user.id = token.sub
-        // Add provider info to session
-        session.user.provider = token.provider as string
-        session.user.emailVerified = token.emailVerified as boolean
+        const userWithId = session.user as any
+        userWithId.id = token.sub
+        userWithId.provider = token.provider
+        userWithId.emailVerified = token.emailVerified
       }
       return session
     },
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         try {
-          // Check if user exists
           const [existingUser] = await db.select().from(users).where(eq(users.email, user.email!))
           
           if (existingUser) {
-            // Update existing user
             await db.update(users).set({
               provider: 'google',
               emailVerified: true
             }).where(eq(users.email, user.email!))
           } else {
-            // Create new user
             await db.insert(users).values({
               name: user.name || user.email!.split('@')[0],
               email: user.email!,
@@ -51,14 +48,12 @@ const handler = NextAuth({
     },
     async jwt({ token, user, account }) {
       if (account?.provider === 'google' && user) {
-        // Store user info in token for session callback
         token.provider = 'google'
         token.emailVerified = true
       }
       return token
     },
     async redirect({ url, baseUrl }) {
-      // Always redirect to homepage after successful sign-in
       return baseUrl
     }
   },

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Image, Download, Eye, Calendar } from 'lucide-react'
+import { Image as ImageIcon, Download, Eye, Calendar } from 'lucide-react'
+import Image from 'next/image'
 
 const UserPhotos = () => {
   const [photos, setPhotos] = useState<any[]>([])
@@ -57,7 +58,7 @@ const UserPhotos = () => {
 
         {photos.length === 0 ? (
           <div className="text-center py-12">
-            <Image className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
               No photos available
             </h3>
@@ -69,10 +70,11 @@ const UserPhotos = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {photos.map((photo) => (
               <div key={photo.id} className="group relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden aspect-square">
-                <img
+                <Image
                   src={photo.url}
                   alt={`${photo.eventType} photo`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
@@ -115,9 +117,11 @@ const UserPhotos = () => {
                 ×
               </button>
               
-              <img
+              <Image
                 src={selectedPhoto.url}
                 alt={`${selectedPhoto.eventType} photo`}
+                width={800}
+                height={600}
                 className="max-w-full max-h-full object-contain"
               />
               

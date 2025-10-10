@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
-import { Menu, X, Sun, Moon, Camera, User, LogOut, Calendar, Image, ChevronDown } from 'lucide-react'
+import { Menu, X, Sun, Moon, Camera, User, LogOut, Calendar, Image as ImageIcon, ChevronDown } from 'lucide-react'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -140,7 +140,7 @@ const Header = () => {
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
-                      <Image className="h-4 w-4 mr-3" />
+                      <ImageIcon className="h-4 w-4 mr-3" />
                       My Photos
                     </button>
                     
@@ -235,7 +235,7 @@ const Header = () => {
                     }}
                     className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <Image className="h-5 w-5 mr-3" />
+                    <ImageIcon className="h-5 w-5 mr-3" />
                     My Photos
                   </button>
                   
