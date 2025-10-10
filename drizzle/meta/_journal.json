@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1760122445563,
+      "tag": "0000_sleepy_karnak",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1760123276626,
+      "tag": "0001_dry_iron_man",
+      "breakpoints": true
+    }
+  ]
+}
