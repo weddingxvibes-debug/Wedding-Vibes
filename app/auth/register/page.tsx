@@ -79,7 +79,7 @@ export default function RegisterPage() {
         if (registerResponse.ok) {
           localStorage.setItem('user', JSON.stringify(data.user))
           localStorage.setItem('token', data.token)
-          router.push('/dashboard')
+          router.push('/')
         } else {
           alert(data.error)
         }
@@ -94,7 +94,7 @@ export default function RegisterPage() {
   }
 
   const handleGoogleSignUp = () => {
-    signIn('google', { callbackUrl: '/dashboard' })
+    signIn('google', { callbackUrl: '/' })
   }
 
   if (step === 2) {

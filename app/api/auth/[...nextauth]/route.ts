@@ -58,8 +58,8 @@ const handler = NextAuth({
       return token
     },
     async redirect({ url, baseUrl }) {
-      // Always redirect to dashboard after successful sign-in
-      return `${baseUrl}/dashboard`
+      // Always redirect to homepage after successful sign-in
+      return baseUrl
     }
   },
   pages: {

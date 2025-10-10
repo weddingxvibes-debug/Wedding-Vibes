@@ -30,7 +30,7 @@ export default function LoginPage() {
       if (response.ok) {
         localStorage.setItem('user', JSON.stringify(data.user))
         localStorage.setItem('token', data.token)
-        router.push('/dashboard')
+        router.push('/')
       } else {
         alert(data.error)
       }
@@ -44,7 +44,7 @@ export default function LoginPage() {
 
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/dashboard' })
+    signIn('google', { callbackUrl: '/' })
   }
 
 

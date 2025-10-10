@@ -57,7 +57,7 @@ export default function GalleryPage() {
   }, [selectedCategory])
 
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-900">
+    <main className="min-h-screen bg-gradient-to-br from-primary-50 via-pink-50 to-gold-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-800">
       <Header />
       
       <section className="pt-24 pb-20">
