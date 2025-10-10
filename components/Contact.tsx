@@ -133,7 +133,7 @@ const Contact = () => {
             Get In Touch
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Ready to capture your special moments? Let us discuss your photography needs and create something beautiful together.
+            Ready to capture your special moments? Book your session through our user portal or contact us directly for custom requirements.
           </p>
         </div>
 
@@ -333,23 +333,32 @@ const Contact = () => {
                 </div>
 
                 {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white py-4 rounded-lg font-semibold text-lg transition-colors duration-300 flex items-center justify-center space-x-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Sending...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-5 w-5" />
-                      <span>Send Message</span>
-                    </>
-                  )}
-                </button>
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => window.location.href = '/dashboard'}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-lg font-semibold text-lg transition-colors duration-300"
+                  >
+                    Book Online
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white py-4 rounded-lg font-semibold text-lg transition-colors duration-300 flex items-center justify-center space-x-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="spinner w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-5 w-5" />
+                        <span>Send Message</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

@@ -59,16 +59,16 @@ const Hero = () => {
 
         <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
           <button 
-            onClick={scrollToGallery}
+            onClick={() => window.location.href = '/dashboard'}
             className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            View Gallery
+            Book Now
           </button>
           <button 
-            onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={scrollToGallery}
             className="w-full sm:w-auto border-2 border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300"
           >
-            Get In Touch
+            View Gallery
           </button>
         </div>
       </div>

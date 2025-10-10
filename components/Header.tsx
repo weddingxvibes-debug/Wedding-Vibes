@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { Menu, X, Sun, Moon, Camera } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Menu, X, Sun, Moon, Camera, User, LogOut } from 'lucide-react'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [user, setUser] = useState<any>(null)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
@@ -16,14 +19,19 @@ const Header = () => {
       setIsScrolled(window.scrollY > 50)
     }
     window.addEventListener('scroll', handleScroll)
+    
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      setUser(JSON.parse(userData))
+    }
+    
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const navItems = [
     { name: 'Home', href: '#home' },
     { name: 'Gallery', href: '/gallery' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' }
+    { name: 'About', href: '#about' }
   ]
 
   const scrollToSection = (href: string) => {
@@ -36,6 +44,13 @@ const Header = () => {
       }
     }
     setIsMenuOpen(false)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    localStorage.removeItem('bookings')
+    setUser(null)
+    router.push('/')
   }
 
   if (!mounted) return null
@@ -72,16 +87,48 @@ const Header = () => {
             ))}
           </div>
 
-          {/* Theme Toggle & Mobile Menu */}
+          {/* Auth & Controls */}
           <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="hidden md:flex items-center space-x-4">
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Dashboard</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center space-x-3">
+                <button
+                  onClick={() => router.push('/auth/login')}
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => router.push('/auth/register')}
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
+
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="hidden md:block p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
@@ -103,6 +150,62 @@ const Header = () => {
                 {item.name}
               </button>
             ))}
+            
+            <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
+              {user ? (
+                <>
+                  <button
+                    onClick={() => {
+                      router.push('/dashboard')
+                      setIsMenuOpen(false)
+                    }}
+                    className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <User className="h-5 w-5 mr-3" />
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLogout()
+                      setIsMenuOpen(false)
+                    }}
+                    className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <LogOut className="h-5 w-5 mr-3" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      router.push('/auth/login')
+                      setIsMenuOpen(false)
+                    }}
+                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      router.push('/auth/register')
+                      setIsMenuOpen(false)
+                    }}
+                    className="block w-full text-center px-4 py-2 mx-4 mt-2 bg-primary-600 text-white hover:bg-primary-700 transition-colors rounded-lg"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
+              
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mt-2"
+              >
+                {theme === 'dark' ? <Sun className="h-5 w-5 mr-3" /> : <Moon className="h-5 w-5 mr-3" />}
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </button>
+            </div>
           </div>
         )}
       </nav>

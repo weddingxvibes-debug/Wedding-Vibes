@@ -8,7 +8,7 @@ import Hero from '@/components/Hero'
 import GalleryPreview from '@/components/GalleryPreview'
 import About from '@/components/About'
 import Testimonials from '@/components/Testimonials'
-import Contact from '@/components/Contact'
+
 import Footer from '@/components/Footer'
 import EntryLoader from '@/components/EntryLoader'
 
@@ -42,13 +42,13 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <main className="min-h-screen overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-300">
       <Header />
       <Hero />
       <GalleryPreview />
       <About />
       <Testimonials />
-      <Contact />
+
       <Footer />
     </main>
   )
