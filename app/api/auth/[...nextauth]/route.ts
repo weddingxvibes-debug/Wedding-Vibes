@@ -1,9 +1,5 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { db } from '@/lib/db'
-import { users } from '@/lib/schema'
-import { eq } from 'drizzle-orm'
 
 const handler = NextAuth({
   providers: [
@@ -25,20 +21,26 @@ const handler = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         try {
-          const [existingUser] = await db.select().from(users).where(eq(users.email, user.email!))
-          
-          if (existingUser) {
-            await db.update(users).set({
-              provider: 'google',
-              emailVerified: true
-            }).where(eq(users.email, user.email!))
-          } else {
-            await db.insert(users).values({
-              name: user.name || user.email!.split('@')[0],
-              email: user.email!,
-              provider: 'google',
-              emailVerified: true
-            })
+          if (process.env.DATABASE_URL) {
+            const { db } = await import('@/lib/db')
+            const { users } = await import('@/lib/schema')
+            const { eq } = await import('drizzle-orm')
+            
+            const [existingUser] = await db.select().from(users).where(eq(users.email, user.email!))
+            
+            if (existingUser) {
+              await db.update(users).set({
+                provider: 'google',
+                emailVerified: true
+              }).where(eq(users.email, user.email!))
+            } else {
+              await db.insert(users).values({
+                name: user.name || user.email!.split('@')[0],
+                email: user.email!,
+                provider: 'google',
+                emailVerified: true
+              })
+            }
           }
         } catch (error) {
           console.error('Google sign-in error:', error)
