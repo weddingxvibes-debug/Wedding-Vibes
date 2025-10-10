@@ -30,7 +30,7 @@ const Testimonials = () => {
       role: 'Wedding Couple',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
       rating: 5,
-      text: 'Wedding Vibes Photography made our special day absolutely magical! Their attention to detail and ability to capture candid moments was incredible. We couldn\'t be happier with our wedding photos.',
+      text: 'Wedding Vibes Photography made our special day absolutely magical! Their attention to detail and ability to capture candid moments was incredible. We could not be happier with our wedding photos.',
       event: 'Traditional Indian Wedding'
     },
     {
@@ -66,7 +66,7 @@ const Testimonials = () => {
       role: 'Pre-wedding Couple',
       image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
       rating: 5,
-      text: 'Our pre-wedding shoot was amazing! They suggested beautiful locations and poses. The final photos were like a fairy tale. Can\'t wait for them to shoot our wedding too!',
+      text: 'Our pre-wedding shoot was amazing! They suggested beautiful locations and poses. The final photos were like a fairy tale. Can&apos;t wait for them to shoot our wedding too!',
       event: 'Pre-wedding Photoshoot'
     }
   ]
@@ -107,7 +107,7 @@ const Testimonials = () => {
             What Our Clients Say
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Don't just take our word for it - hear from the couples and families we've had the pleasure to work with
+            Do not just take our word for it - hear from the couples and families we have had the pleasure to work with
           </p>
         </div>
 
@@ -134,7 +134,7 @@ const Testimonials = () => {
 
                     {/* Testimonial Text */}
                     <blockquote className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8 font-medium">
-                      "{testimonial.text}"
+                      &ldquo;{testimonial.text}&rdquo;
                     </blockquote>
 
                     {/* Client Info */}

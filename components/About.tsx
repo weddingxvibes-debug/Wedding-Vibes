@@ -48,7 +48,7 @@ const About = () => {
     gsap.fromTo('.stat-number',
       { textContent: 0 },
       {
-        textContent: (i, target) => target.getAttribute('data-value'),
+        textContent: (i: number, target: Element) => target.getAttribute('data-value'),
         duration: 2,
         ease: 'power2.out',
         snap: { textContent: 1 },
@@ -108,7 +108,7 @@ const About = () => {
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
                 From intimate ceremonies to grand celebrations, we blend traditional 
                 photography with modern techniques to create timeless memories that 
-                you'll cherish forever. Every click captures not just an image, 
+                you&apos;ll cherish forever. Every click captures not just an image, 
                 but the essence of your beautiful journey.
               </p>
             </div>

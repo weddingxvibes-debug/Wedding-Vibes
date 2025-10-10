@@ -133,7 +133,7 @@ const Contact = () => {
             Get In Touch
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Ready to capture your special moments? Let's discuss your photography needs and create something beautiful together.
+            Ready to capture your special moments? Let us discuss your photography needs and create something beautiful together.
           </p>
         </div>
 
@@ -142,11 +142,11 @@ const Contact = () => {
           <div ref={infoRef} className="space-y-8">
             <div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Let's Start a Conversation
+                Let us Start a Conversation
               </h3>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-                We'd love to hear about your upcoming event and discuss how we can make it unforgettable. 
-                Reach out to us through any of the channels below, and we'll get back to you within 24 hours.
+                We would love to hear about your upcoming event and discuss how we can make it unforgettable. 
+                Reach out to us through any of the channels below, and we will get back to you within 24 hours.
               </p>
             </div>
 
@@ -213,7 +213,7 @@ const Contact = () => {
                 <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center space-x-2">
                   <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                   <span className="text-green-700 dark:text-green-300">
-                    Thank you! We'll get back to you within 24 hours.
+                    Thank you! We will get back to you within 24 hours.
                   </span>
                 </div>
               )}

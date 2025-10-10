@@ -33,54 +33,54 @@ const Portfolio = () => {
     { id: 'videos', name: 'Videos' }
   ]
 
-  // Mock portfolio data (replace with Instagram API integration)
-  const mockPortfolioData: PortfolioItem[] = [
-    {
-      id: '1',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800',
-      caption: 'Beautiful Indian wedding ceremony by @wedding_vibes_rp',
-      category: 'weddings'
-    },
-    {
-      id: '2',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800',
-      caption: 'Traditional wedding rituals captured by Priyanshu',
-      category: 'weddings'
-    },
-    {
-      id: '3',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800',
-      caption: 'Ganpati celebration moments',
-      category: 'functions'
-    },
-    {
-      id: '4',
-      type: 'video',
-      url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      thumbnail: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800',
-      caption: 'Wedding highlights reel by @wedding_vibes_rp',
-      category: 'videos'
-    },
-    {
-      id: '5',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
-      caption: 'Corporate event photography',
-      category: 'events'
-    },
-    {
-      id: '6',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800',
-      caption: 'Birthday celebration memories',
-      category: 'parties'
-    }
-  ]
-
   useEffect(() => {
+    // Mock portfolio data (replace with Instagram API integration)
+    const mockPortfolioData: PortfolioItem[] = [
+      {
+        id: '1',
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800',
+        caption: 'Beautiful Indian wedding ceremony by @wedding_vibes_rp',
+        category: 'weddings'
+      },
+      {
+        id: '2',
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800',
+        caption: 'Traditional wedding rituals captured by Priyanshu',
+        category: 'weddings'
+      },
+      {
+        id: '3',
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800',
+        caption: 'Ganpati celebration moments',
+        category: 'functions'
+      },
+      {
+        id: '4',
+        type: 'video',
+        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800',
+        caption: 'Wedding highlights reel by @wedding_vibes_rp',
+        category: 'videos'
+      },
+      {
+        id: '5',
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        caption: 'Corporate event photography',
+        category: 'events'
+      },
+      {
+        id: '6',
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800',
+        caption: 'Birthday celebration memories',
+        category: 'parties'
+      }
+    ]
+
     // Simulate loading Instagram data
     setTimeout(() => {
       setPortfolioItems(mockPortfolioData)

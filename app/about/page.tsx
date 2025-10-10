@@ -87,7 +87,7 @@ export default function AboutPage() {
               About Our Story
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              With over 8 years of experience, we've dedicated our lives to capturing the most precious moments 
+              With over 8 years of experience, we&apos;ve dedicated our lives to capturing the most precious moments 
               and creating timeless memories for families across India.
             </p>
           </div>
@@ -106,16 +106,16 @@ export default function AboutPage() {
                 <p>
                   Wedding Vibes Photography was born from a simple belief: every moment is precious, 
                   and every story deserves to be told beautifully. What started as a passion project 
-                  in 2016 has grown into one of India's most trusted photography studios.
+                  in 2016 has grown into one of India&apos;s most trusted photography studios.
                 </p>
                 <p>
                   Our founder, Rajesh Sharma, began this journey with a camera and a dream to capture 
-                  the authentic emotions of Indian weddings. Over the years, we've expanded our team 
+                  the authentic emotions of Indian weddings. Over the years, we have expanded our team 
                   and services, but our core mission remains the same - to preserve your most 
                   cherished memories with artistry and care.
                 </p>
                 <p>
-                  Today, we're proud to have captured over 500 weddings, countless celebrations, 
+                  Today, we&apos;re proud to have captured over 500 weddings, countless celebrations, 
                   and thousands of smiles. Each project teaches us something new and reminds us 
                   why we fell in love with photography in the first place.
                 </p>
