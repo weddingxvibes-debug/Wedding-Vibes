@@ -47,7 +47,7 @@ yarn-error.log*
 /drizzle/migrations
 
 # API keys and secrets
-.env.example
+# Keep .env.example for reference
 
 # vercel
 .vercel
