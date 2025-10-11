@@ -3,15 +3,17 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
+import { signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/useAuth'
 import { Menu, X, Sun, Moon, Camera, User, LogOut, Calendar, Image as ImageIcon, ChevronDown } from 'lucide-react'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [user, setUser] = useState<any>(null)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const profileRef = useRef<HTMLDivElement>(null)
 
@@ -29,11 +31,6 @@ const Header = () => {
     
     window.addEventListener('scroll', handleScroll)
     document.addEventListener('mousedown', handleClickOutside)
-    
-    const userData = localStorage.getItem('user')
-    if (userData) {
-      setUser(JSON.parse(userData))
-    }
     
     return () => {
       window.removeEventListener('scroll', handleScroll)
@@ -60,10 +57,12 @@ const Header = () => {
     setIsMenuOpen(false)
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (user?.provider === 'google') {
+      await signOut({ callbackUrl: '/' })
+    }
     localStorage.removeItem('user')
     localStorage.removeItem('bookings')
-    setUser(null)
     router.push('/')
   }
 
