@@ -1,4 +1,7 @@
 import nodemailer from 'nodemailer'
+import { db } from './db'
+import { bookings } from './schema'
+import { eq } from 'drizzle-orm'
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_SERVER_HOST,
@@ -12,7 +15,6 @@ const transporter = nodemailer.createTransport({
 
 export const sendOTPEmail = async (email: string, otp: string) => {
   try {
-    // For development - also log to console
     console.log(`\n=== OTP EMAIL ===`)
     console.log(`To: ${email}`)
     console.log(`OTP Code: ${otp}`)
@@ -54,8 +56,109 @@ export const sendOTPEmail = async (email: string, otp: string) => {
     return true
   } catch (error) {
     console.error('Email sending error:', error)
-    // Still log to console as fallback
     console.log(`FALLBACK - OTP for ${email}: ${otp}`)
     return true
+  }
+}
+
+export const sendBookingEmails = async ({ userEmail, adminEmail, bookingDetails }: {
+  userEmail: string
+  adminEmail: string
+  bookingDetails: any
+}) => {
+  try {
+    // Send confirmation email to user
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: userEmail,
+      subject: 'Wedding Vibes - Booking Confirmation',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ec4899;">Wedding Vibes Photography</h1>
+          <h2>Booking Confirmation</h2>
+          <p>Thank you for your booking request! We have received your inquiry and it's currently pending approval.</p>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3>Booking Details:</h3>
+            <p><strong>Event Type:</strong> ${bookingDetails.eventType}</p>
+            <p><strong>Date:</strong> ${bookingDetails.eventDate}</p>
+            <p><strong>Venue:</strong> ${bookingDetails.venue}</p>
+            <p><strong>Contact:</strong> ${bookingDetails.contactNumber}</p>
+          </div>
+          <p>We will review your request and get back to you soon!</p>
+        </div>
+      `
+    })
+
+    // Send notification email to admin
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: adminEmail,
+      subject: 'New Booking Request - Wedding Vibes',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ec4899;">New Booking Request</h1>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3>Booking Details:</h3>
+            <p><strong>ID:</strong> ${bookingDetails.id}</p>
+            <p><strong>Event Type:</strong> ${bookingDetails.eventType}</p>
+            <p><strong>Date:</strong> ${bookingDetails.eventDate}</p>
+            <p><strong>Venue:</strong> ${bookingDetails.venue}</p>
+            <p><strong>Contact:</strong> ${bookingDetails.contactNumber}</p>
+            <p><strong>Email:</strong> ${bookingDetails.email}</p>
+            <p><strong>Message:</strong> ${bookingDetails.message}</p>
+          </div>
+          <p>Please review and approve/reject this booking in the admin dashboard.</p>
+        </div>
+      `
+    })
+
+    return true
+  } catch (error) {
+    console.error('Booking email error:', error)
+    return false
+  }
+}
+
+export const sendApprovalEmail = async (userEmail: string, booking: any, status: 'approved' | 'rejected') => {
+  try {
+    const subject = status === 'approved' ? 'Booking Approved!' : 'Booking Update'
+    const message = status === 'approved' 
+      ? 'Great news! Your booking has been approved.'
+      : 'Unfortunately, your booking request could not be approved. Please contact us for more information.'
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: userEmail,
+      subject: `Wedding Vibes - ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #ec4899;">Wedding Vibes Photography</h1>
+          <h2>${subject}</h2>
+          <p>${message}</p>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3>Booking Details:</h3>
+            <p><strong>Event Type:</strong> ${booking.eventType}</p>
+            <p><strong>Date:</strong> ${booking.date}</p>
+            <p><strong>Venue:</strong> ${booking.venue}</p>
+          </div>
+          ${status === 'rejected' ? '<p>For any questions, please contact us at udaydeshmukh248@gmail.com</p>' : ''}
+        </div>
+      `
+    })
+
+    return true
+  } catch (error) {
+    console.error('Approval email error:', error)
+    return false
+  }
+}
+
+export const addToCalendar = async (booking: any) => {
+  try {
+    console.log('Adding to calendar:', booking)
+    return true
+  } catch (error) {
+    console.error('Calendar error:', error)
+    return false
   }
 }

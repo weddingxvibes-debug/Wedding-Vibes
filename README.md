@@ -11,26 +11,30 @@ A comprehensive wedding photography business management platform built with Next
 - **Gallery**: Dynamic photo galleries with categories
 - **SEO Optimized**: Complete meta tags and structured data
 - **Mobile-First**: Optimized for all devices
+- **User Authentication**: Google OAuth integration
+- **Booking System**: Real-time booking with email notifications
 
 ### 🎛️ Admin Dashboard
-- **User Management**: Complete client database with status tracking
-- **Booking System**: Inquiry management with scheduling tools
-- **Photo Management**: Dynamic folder creation and organization
-- **Calendar**: Event scheduling and timeline management
-- **Package Management**: Service pricing and feature control
-- **Gallery Management**: Client gallery organization and sharing
-- **Real-time Stats**: Business analytics and performance metrics
+- **User Management**: Complete client database from PostgreSQL
+- **Booking System**: Real-time booking management with approval workflow
+- **Email Notifications**: Automated booking confirmations and approvals
+- **Database Integration**: Full PostgreSQL integration with Neon
+- **Real-time Updates**: Live data with refresh functionality
+- **Toast Notifications**: User-friendly feedback system
+- **Loading States**: Professional UX with loading indicators
 
 ## 🚀 Tech Stack
 
 - **Framework**: Next.js 14 with App Router
+- **Database**: PostgreSQL with Neon (Cloud)
+- **ORM**: Drizzle ORM with migrations
 - **Styling**: Tailwind CSS with custom animations
-- **Database**: LocalStorage with full CRUD operations
-- **Authentication**: Custom admin authentication
-- **Forms**: React Hook Form with validation
+- **Authentication**: NextAuth.js with Google OAuth
+- **Email**: Nodemailer with Gmail SMTP
+- **Notifications**: React Hot Toast
 - **Icons**: Lucide React
 - **TypeScript**: Full type safety throughout
-- **Responsive**: Mobile-first design approach
+- **Deployment**: Vercel-ready
 
 ## 📦 Installation & Setup
 
@@ -46,21 +50,31 @@ A comprehensive wedding photography business management platform built with Next
    ```
 
 3. **Set up environment variables**
-   Create a `.env.local` file:
-   ```env
-   # EmailJS Configuration (Optional)
-   NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
-   NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
-   NEXT_PUBLIC_EMAILJS_USER_ID=your_user_id
+   Copy `.env.example` to `.env.local` and fill in your values:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Required environment variables:
+   - `DATABASE_URL`: Your Neon PostgreSQL connection string
+   - `NEXTAUTH_SECRET`: Random secret for NextAuth
+   - `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET`: Google OAuth credentials
+   - `EMAIL_SERVER_*`: Gmail SMTP configuration
+   - `EMAILJS_*`: EmailJS configuration (optional)
+
+4. **Set up the database**
+   ```bash
+   npm run db:migrate
    ```
 
-4. **Run the development server**
+5. **Run the development server**
    ```bash
    npm run dev
    ```
 
-5. **Access the application**
+6. **Access the application**
    - **Client Website**: `http://localhost:3000`
+   - **User Bookings**: `http://localhost:3000/my-bookings`
    - **Admin Dashboard**: `http://localhost:3000/admin`
    - **Admin Credentials**: 
      - Email: `udaypawar004@gmail.com`
@@ -88,16 +102,18 @@ A comprehensive wedding photography business management platform built with Next
 
 ## 🗄️ Database Structure
 
-The application uses localStorage for data persistence with the following databases:
+The application uses PostgreSQL (Neon) with the following tables:
 
-- **Users**: Client information and lead management
-- **Bookings**: Inquiry and booking status tracking
-- **Calendar**: Event scheduling and timeline
-- **Packages**: Service offerings and pricing
-- **Gallery**: Client photo galleries
-- **Photos**: Portfolio image organization
+- **users**: User authentication and profile information
+- **bookings**: Booking requests with status tracking and email notifications
+- **otp_codes**: Email verification codes
+- **photos**: Portfolio and client photo management
 
-All databases include full CRUD operations and real-time updates.
+All tables include:
+- Full CRUD operations
+- Real-time updates
+- Proper relationships and constraints
+- Automatic timestamps
 
 ## 🎯 Admin Dashboard Features
 
@@ -129,41 +145,59 @@ All databases include full CRUD operations and real-time updates.
 
 ## 🚀 Production Deployment
 
-### Build for Production
+### Vercel Deployment (Recommended)
+1. **Connect to Vercel**
+   ```bash
+   npm i -g vercel
+   vercel
+   ```
+
+2. **Set Environment Variables**
+   Add all variables from `.env.local` to Vercel dashboard
+
+3. **Deploy**
+   ```bash
+   vercel --prod
+   ```
+
+### Manual Deployment
 ```bash
 npm run build
 npm start
 ```
 
 ### Environment Setup
-- Configure environment variables for production
-- Set up proper domain and SSL certificates
-- Configure email services for contact forms
-- Set up analytics and monitoring
+- Configure all environment variables in production
+- Set up Neon PostgreSQL database
+- Configure Google OAuth for production domain
+- Set up Gmail SMTP for email notifications
+- Run database migrations: `npm run db:migrate`
 
 ### Performance Features
 - Next.js automatic optimization
+- PostgreSQL connection pooling
 - Image compression and lazy loading
 - Code splitting and tree shaking
-- Responsive image delivery
+- Real-time toast notifications
 
-## 📊 Business Analytics
+## 📊 Business Features
 
-- Real-time booking statistics
-- User engagement tracking
-- Calendar event management
-- Package performance metrics
-- Gallery view analytics
-- Lead conversion tracking
+- **Real-time Booking Management**: Live booking status updates
+- **Email Automation**: Automatic booking confirmations and approvals
+- **User Authentication**: Secure Google OAuth login
+- **Admin Dashboard**: Complete business management interface
+- **Database Integration**: Reliable PostgreSQL data storage
+- **Mobile Responsive**: Works perfectly on all devices
+- **Toast Notifications**: User-friendly feedback system
 
 ## 🔐 Security Features
 
-- Admin authentication system
-- Input validation and sanitization
-- XSS protection
-- CSRF protection
-- Secure data handling
-- Environment variable protection
+- **NextAuth.js**: Secure authentication with Google OAuth
+- **PostgreSQL**: Secure database with proper relationships
+- **Environment Variables**: Secure configuration management
+- **Input Validation**: Server-side validation for all forms
+- **HTTPS Ready**: SSL/TLS encryption support
+- **XSS Protection**: Built-in Next.js security features
 
 ## 📁 Project Structure
 

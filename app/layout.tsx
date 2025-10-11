@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import { Providers } from './providers'
 import './globals.css'
 import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://weddingvibes.com'),
@@ -176,6 +177,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster position="top-right" />
             <Analytics />
           </ThemeProvider>
         </Providers>

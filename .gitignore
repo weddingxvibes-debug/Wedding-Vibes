@@ -34,6 +34,21 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+/uploads
+/public/uploads
+
+# Generated files
+/drizzle/migrations
+
+# API keys and secrets
+.env.example
+
 # vercel
 .vercel
 

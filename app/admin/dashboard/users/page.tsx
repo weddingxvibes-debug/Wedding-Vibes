@@ -2,44 +2,71 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getUsers, initializeUsersDB, updateUser, deleteUser, type User } from '@/lib/users-db'
+import { RefreshCw, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import MobileLayout from '@/components/admin/MobileLayout'
+
+type User = {
+  id: number
+  name: string
+  email: string
+  phone: string | null
+  role: string
+  emailVerified: boolean
+  provider: string
+  createdAt: string
+  updatedAt: string
+}
 
 export default function UsersPage() {
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [showModal, setShowModal] = useState(false)
-  const [filter, setFilter] = useState<'all' | User['status']>('all')
+  const [filter, setFilter] = useState<'all' | string>('all')
 
   useEffect(() => {
     const auth = localStorage.getItem('adminAuth')
     if (auth === 'true') {
       setIsAuthenticated(true)
-      initializeUsersDB()
       loadUsers()
     } else {
       router.push('/admin')
     }
   }, [router])
 
-  const loadUsers = () => {
-    setUsers(getUsers())
-  }
-
-  const handleStatusUpdate = (userId: string, status: User['status']) => {
-    updateUser(userId, { status })
-    loadUsers()
-  }
-
-  const handlePriorityUpdate = (userId: string, priority: User['priority']) => {
-    updateUser(userId, { priority })
-    loadUsers()
+  const loadUsers = async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true)
+    } else {
+      setLoading(true)
+    }
+    
+    try {
+      const response = await fetch('/api/admin/users')
+      if (response.ok) {
+        const data = await response.json()
+        setUsers(data)
+        if (isRefresh) {
+          toast.success('Users refreshed successfully')
+        }
+      } else {
+        toast.error('Failed to fetch users')
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error)
+      toast.error('Failed to fetch users')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }
 
   const filteredUsers = users.filter(user => 
-    filter === 'all' || user.status === filter
+    filter === 'all' || user.role === filter
   )
 
   if (!isAuthenticated) {
@@ -85,19 +112,16 @@ export default function UsersPage() {
                     <h3 className="text-lg font-semibold text-white">{user.name}</h3>
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.priority === 'high' ? 'bg-red-600/30 text-red-300 border border-red-600/50' :
-                        user.priority === 'medium' ? 'bg-yellow-600/30 text-yellow-300 border border-yellow-600/50' :
-                        'bg-green-600/30 text-green-300 border border-green-600/50'
+                        user.emailVerified ? 'bg-green-600/30 text-green-300 border border-green-600/50' :
+                        'bg-red-600/30 text-red-300 border border-red-600/50'
                       }`}>
-                        {user.priority.toUpperCase()}
+                        {user.emailVerified ? 'VERIFIED' : 'UNVERIFIED'}
                       </span>
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.status === 'booked' ? 'bg-green-600/30 text-green-300 border border-green-600/50' :
-                        user.status === 'quoted' ? 'bg-blue-600/30 text-blue-300 border border-blue-600/50' :
-                        user.status === 'new' ? 'bg-purple-600/30 text-purple-300 border border-purple-600/50' :
-                        'bg-gray-600/30 text-gray-300 border border-gray-600/50'
+                        user.role === 'admin' ? 'bg-purple-600/30 text-purple-300 border border-purple-600/50' :
+                        'bg-blue-600/30 text-blue-300 border border-blue-600/50'
                       }`}>
-                        {user.status.toUpperCase()}
+                        {user.role?.toUpperCase() || 'USER'}
                       </span>
                     </div>
                   </div>
@@ -109,24 +133,16 @@ export default function UsersPage() {
                     </div>
                     <div className="flex items-center">
                       <span className="mr-2">📱</span>
-                      <span>{user.phone}</span>
+                      <span>{user.phone || 'N/A'}</span>
                     </div>
                     <div className="flex items-center">
-                      <span className="mr-2">🎉</span>
-                      <span>{user.eventType}</span>
+                      <span className="mr-2">🔐</span>
+                      <span>{user.provider}</span>
                     </div>
                     <div className="flex items-center">
                       <span className="mr-2">📅</span>
-                      <span>{new Date(user.eventDate).toLocaleDateString()}</span>
+                      <span>{new Date(user.createdAt).toLocaleDateString()}</span>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-400 mb-3">
-                    <span className="mr-2">💰</span>
-                    <span>{user.budget}</span>
-                    <span className="mx-2">•</span>
-                    <span className="mr-2">📍</span>
-                    <span>{user.city}</span>
                   </div>
                 </div>
                 
@@ -146,7 +162,7 @@ export default function UsersPage() {
           ))}
         </div>
 
-        {filteredUsers.length === 0 && (
+        {!loading && filteredUsers.length === 0 && (
           <div className="bg-gray-800/30 backdrop-blur-lg border border-gray-700 rounded-2xl p-8 text-center">
             <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,7 +173,7 @@ export default function UsersPage() {
               No users found
             </div>
             <p className="text-gray-500">
-              {filter === 'all' ? 'No users in the system yet' : `No users with status: ${filter}`}
+              {filter === 'all' ? 'No users in the system yet' : `No users with role: ${filter}`}
             </p>
           </div>
         )}
@@ -181,97 +197,31 @@ export default function UsersPage() {
               </div>
               
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Contact Information</label>
-                      <div className="mt-2 space-y-2">
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">📧</span>
-                          <span>{selectedUser.email}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">📱</span>
-                          <span>{selectedUser.phone}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">📍</span>
-                          <span>{selectedUser.address}, {selectedUser.city}, {selectedUser.state}</span>
-                        </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-300">User Information</label>
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center text-gray-300">
+                        <span className="mr-2">📧</span>
+                        <span>{selectedUser.email}</span>
+                      </div>
+                      <div className="flex items-center text-gray-300">
+                        <span className="mr-2">📱</span>
+                        <span>{selectedUser.phone || 'Not provided'}</span>
+                      </div>
+                      <div className="flex items-center text-gray-300">
+                        <span className="mr-2">🔐</span>
+                        <span>Provider: {selectedUser.provider}</span>
+                      </div>
+                      <div className="flex items-center text-gray-300">
+                        <span className="mr-2">✅</span>
+                        <span>Email Verified: {selectedUser.emailVerified ? 'Yes' : 'No'}</span>
+                      </div>
+                      <div className="flex items-center text-gray-300">
+                        <span className="mr-2">👤</span>
+                        <span>Role: {selectedUser.role}</span>
                       </div>
                     </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Event Details</label>
-                      <div className="mt-2 space-y-2">
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">🎉</span>
-                          <span>{selectedUser.eventType}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">📅</span>
-                          <span>{new Date(selectedUser.eventDate).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">💰</span>
-                          <span>{selectedUser.budget}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <span className="mr-2">📢</span>
-                          <span>Source: {selectedUser.source}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Status & Priority</label>
-                      <div className="mt-2 space-y-2">
-                        <select
-                          value={selectedUser.status}
-                          onChange={(e) => {
-                            handleStatusUpdate(selectedUser.id, e.target.value as User['status'])
-                            setSelectedUser({...selectedUser, status: e.target.value as User['status']})
-                          }}
-                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
-                        >
-                          <option value="new">New</option>
-                          <option value="contacted">Contacted</option>
-                          <option value="quoted">Quoted</option>
-                          <option value="booked">Booked</option>
-                          <option value="completed">Completed</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                        
-                        <select
-                          value={selectedUser.priority}
-                          onChange={(e) => {
-                            handlePriorityUpdate(selectedUser.id, e.target.value as User['priority'])
-                            setSelectedUser({...selectedUser, priority: e.target.value as User['priority']})
-                          }}
-                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
-                        >
-                          <option value="low">Low Priority</option>
-                          <option value="medium">Medium Priority</option>
-                          <option value="high">High Priority</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Requirements</label>
-                  <div className="mt-2 p-3 bg-gray-700/30 rounded-lg text-gray-300">
-                    {selectedUser.requirements}
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Notes</label>
-                  <div className="mt-2 p-3 bg-gray-700/30 rounded-lg text-gray-300">
-                    {selectedUser.notes || 'No notes added yet.'}
                   </div>
                 </div>
                 

@@ -1,0 +1,9 @@
+{
+  "name": "Wedding Vibes Photography",
+  "short_name": "Wedding Vibes",
+  "description": "Professional Wedding Photography Services",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ec4899"
+}

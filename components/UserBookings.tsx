@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calendar, Clock, MapPin, Phone, Mail, Plus } from 'lucide-react'
+import { Calendar, Clock, MapPin, Phone, Mail, Plus, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 const UserBookings = () => {
   const [bookings, setBookings] = useState<any[]>([])
   const [showBookingForm, setShowBookingForm] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     eventType: '',
     eventDate: '',
@@ -15,35 +18,66 @@ const UserBookings = () => {
     message: ''
   })
 
-  useEffect(() => {
-    const savedBookings = localStorage.getItem('bookings')
-    if (savedBookings) {
-      setBookings(JSON.parse(savedBookings))
+  const fetchBookings = async () => {
+    const user = localStorage.getItem('user')
+    if (user) {
+      const userData = JSON.parse(user)
+      setLoading(true)
+      try {
+        const response = await fetch(`/api/bookings?email=${userData.email}`)
+        if (response.ok) {
+          const data = await response.json()
+          setBookings(data)
+        } else {
+          toast.error('Failed to fetch bookings')
+        }
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error)
+        toast.error('Failed to fetch bookings')
+      } finally {
+        setLoading(false)
+      }
     }
+  }
+
+  useEffect(() => {
+    fetchBookings()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newBooking = {
-      id: Date.now(),
-      ...formData,
-      status: 'Pending',
-      createdAt: new Date().toISOString()
+    setSubmitting(true)
+    
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      
+      if (response.ok) {
+        toast.success('Booking submitted successfully! You will receive a confirmation email shortly.')
+        await fetchBookings()
+        setFormData({
+          eventType: '',
+          eventDate: '',
+          venue: '',
+          contactNumber: '',
+          email: '',
+          message: ''
+        })
+        setShowBookingForm(false)
+      } else {
+        toast.error('Failed to submit booking. Please try again.')
+      }
+    } catch (error) {
+      console.error('Booking submission error:', error)
+      toast.error('Failed to submit booking. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
-    
-    const updatedBookings = [...bookings, newBooking]
-    setBookings(updatedBookings)
-    localStorage.setItem('bookings', JSON.stringify(updatedBookings))
-    
-    setFormData({
-      eventType: '',
-      eventDate: '',
-      venue: '',
-      contactNumber: '',
-      email: '',
-      message: ''
-    })
-    setShowBookingForm(false)
   }
 
   return (
@@ -67,7 +101,12 @@ const UserBookings = () => {
           </button>
         </div>
 
-        {bookings.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary-600 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">Loading bookings...</p>
+          </div>
+        ) : bookings.length === 0 ? (
           <div className="text-center py-12">
             <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
@@ -92,9 +131,9 @@ const UserBookings = () => {
                     {booking.eventType}
                   </h3>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    booking.status === 'Confirmed' 
+                    booking.status === 'approved' 
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : booking.status === 'Pending'
+                      : booking.status === 'pending'
                       ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                       : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                   }`}>
@@ -105,7 +144,7 @@ const UserBookings = () => {
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-600 dark:text-gray-400">
                     <Calendar className="h-4 w-4 mr-3" />
-                    <span>{new Date(booking.eventDate).toLocaleDateString()}</span>
+                    <span>{new Date(booking.date).toLocaleDateString()}</span>
                   </div>
                   
                   {booking.venue && (
@@ -117,7 +156,7 @@ const UserBookings = () => {
                   
                   <div className="flex items-center text-gray-600 dark:text-gray-400">
                     <Phone className="h-4 w-4 mr-3" />
-                    <span>{booking.contactNumber}</span>
+                    <span>{booking.notes?.match(/Contact: ([^\n]+)/)?.[1] || 'N/A'}</span>
                   </div>
                 </div>
               </div>
@@ -230,9 +269,17 @@ const UserBookings = () => {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+                    disabled={submitting}
+                    className="flex-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white rounded-lg transition-colors flex items-center justify-center"
                   >
-                    Submit Booking
+                    {submitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Booking'
+                    )}
                   </button>
                 </div>
               </form>

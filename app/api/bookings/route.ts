@@ -1,55 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { bookings } from '@/lib/schema'
-import { verifyToken } from '@/lib/auth'
+import { bookings, users } from '@/lib/schema'
+import { sendBookingEmails } from '@/lib/email'
 import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { eventType, eventDate, venue, contactNumber, email, message, userId } = await request.json()
 
-    const decoded = verifyToken(token) as any
-    if (!decoded) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    const { eventType, date, time, venue, guests, duration, notes } = await request.json()
-
+    // Insert booking into database
     const [newBooking] = await db.insert(bookings).values({
-      userId: decoded.userId,
+      userId: null,
       eventType,
-      date,
-      time,
+      date: eventDate,
+      time: '00:00',
       venue,
-      guests: parseInt(guests),
-      duration,
-      notes
+      notes: `Contact: ${contactNumber}\nEmail: ${email}\nMessage: ${message}`,
+      status: 'pending'
     }).returning()
 
-    return NextResponse.json(newBooking)
+    // Send emails
+    await sendBookingEmails({
+      userEmail: email,
+      adminEmail: 'udaydeshmukh248@gmail.com',
+      bookingDetails: {
+        id: newBooking.id,
+        eventType,
+        eventDate,
+        venue,
+        contactNumber,
+        email,
+        message
+      }
+    })
+
+    return NextResponse.json({ success: true, booking: newBooking })
   } catch (error) {
+    console.error('Booking error:', error)
     return NextResponse.json({ error: 'Booking failed' }, { status: 500 })
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const url = new URL(request.url)
+    const email = url.searchParams.get('email')
+    
+    if (!email) {
+      return NextResponse.json({ error: 'Email required' }, { status: 400 })
     }
 
-    const decoded = verifyToken(token) as any
-    if (!decoded) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    const userBookings = await db.select().from(bookings).where(eq(bookings.userId, decoded.userId))
-    return NextResponse.json(userBookings)
+    // Get bookings by email from notes field
+    const userBookings = await db.select().from(bookings)
+    const filteredBookings = userBookings.filter(booking => 
+      booking.notes?.includes(`Email: ${email}`)
+    )
+    
+    return NextResponse.json(filteredBookings)
   } catch (error) {
+    console.error('Fetch bookings error:', error)
     return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 })
   }
 }
