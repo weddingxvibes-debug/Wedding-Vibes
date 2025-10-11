@@ -101,7 +101,7 @@ const Footer = () => {
                   <a href="tel:+919425383179" className="text-gray-400 hover:text-primary-400 transition-colors block">
                     +91 94253 83179
                   </a>
-                  <p className="text-gray-500 text-sm">Priyanshu Malviya</p>
+                  <p className="text-gray-500 text-sm">Priyanshu Malviya - Betul, MP</p>
                 </div>
               </div>
               
@@ -120,7 +120,7 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-primary-400 mt-1 flex-shrink-0" />
                 <div className="text-gray-400">
-                  <p>Mumbai, Maharashtra</p>
+                  <p>Betul, Madhya Pradesh</p>
                   <p>Available Pan-India</p>
                 </div>
               </div>

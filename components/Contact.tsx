@@ -103,7 +103,7 @@ const Contact = () => {
     {
       icon: MapPin,
       title: 'Location',
-      details: ['Mumbai, Maharashtra', 'Available Pan-India'],
+      details: ['Betul, Madhya Pradesh', 'Available Pan-India'],
       action: null
     },
     {
