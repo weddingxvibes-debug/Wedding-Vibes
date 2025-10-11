@@ -173,4 +173,4 @@ export default function Head() {
           })
         }}
       />
-    </>\n  )\n}
+    </>)}
