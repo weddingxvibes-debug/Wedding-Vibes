@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { getPhotoFolders, getAboutImage, addPhotoToFolder, deletePhotoFromFolder, updateAboutImage, initializePhotosDB, createFolder, deleteFolder, type PhotoFolder, type AboutImage } from '@/lib/photos-db'
 import { convertFileToBase64, validateImageFile, compressImage } from '@/lib/file-upload'
 import MobileLayout from '@/components/admin/MobileLayout'
@@ -157,10 +158,11 @@ export default function PhotosPage() {
                       <LoadingSpinner size="lg" />
                     </div>
                   )}
-                  <img
+                  <Image
                     src={aboutImage.url}
                     alt={aboutImage.alt}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     onLoad={() => setImageLoading(prev => ({ ...prev, [aboutImage.id]: false }))}
                     onLoadStart={() => setImageLoading(prev => ({ ...prev, [aboutImage.id]: true }))}
                     onError={(e) => {
@@ -407,10 +409,11 @@ export default function PhotosPage() {
                         <LoadingSpinner />
                       </div>
                     )}
-                    <img
+                    <Image
                       src={photo.url}
                       alt={photo.alt}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-110"
                       onLoad={() => setImageLoading(prev => ({ ...prev, [photo.id]: false }))}
                       onLoadStart={() => setImageLoading(prev => ({ ...prev, [photo.id]: true }))}
                       onError={(e) => {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { getGalleries, initializeGalleryDB, updateGallery, type GalleryItem } from '@/lib/gallery-db'
 import MobileLayout from '@/components/admin/MobileLayout'
 
@@ -72,9 +73,11 @@ export default function GalleryPage() {
           {filteredGalleries.map((gallery) => (
             <div key={gallery.id} className="bg-gray-800/30 backdrop-blur-lg border border-gray-700 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all group">
               <div className="relative">
-                <img
+                <Image
                   src={gallery.coverImage}
                   alt={gallery.title}
+                  width={400}
+                  height={192}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-3 right-3 flex gap-2">

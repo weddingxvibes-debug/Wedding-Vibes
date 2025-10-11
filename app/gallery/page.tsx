@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { getPhotoFolders, initializePhotosDB, type PhotoFolder, type Photo } from '@/lib/photos-db'
 import Link from 'next/link'
 
@@ -89,10 +90,11 @@ export default function GalleryPage() {
                 className="aspect-square bg-gray-800/30 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform"
                 onClick={() => setSelectedPhoto(photo)}
               >
-                <img
+                <Image
                   src={photo.url}
                   alt={photo.alt}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
                     target.src = 'https://via.placeholder.com/400x400/374151/9CA3AF?text=No+Image'
@@ -115,9 +117,11 @@ export default function GalleryPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <img
+            <Image
               src={selectedPhoto.url}
               alt={selectedPhoto.alt}
+              width={800}
+              height={600}
               className="max-w-full max-h-full object-contain rounded-lg"
             />
             <p className="text-white text-center mt-4">{selectedPhoto.alt}</p>

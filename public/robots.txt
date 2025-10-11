@@ -2,11 +2,13 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://weddingvibes.com/sitemap.xml
 
-# Disallow admin areas (if any)
+# Disallow admin pages
 Disallow: /admin/
 Disallow: /api/
 
-# Allow all crawlers to access the site
-# This is good for SEO and helps search engines index your photography portfolio
+# Allow important pages for SEO
+Allow: /photography-in-betul
+Allow: /photo-studio-betul
+Allow: /wedding-photographer-betul
