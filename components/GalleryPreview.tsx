@@ -1,18 +1,22 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
-import { mockInstagramData } from '@/lib/mock-instagram-data'
+import { getRandomPhotos, initializePhotosDB, type Photo } from '@/lib/photos-db'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const GalleryPreview = () => {
   const galleryRef = useRef<HTMLDivElement>(null)
+  const [previewPhotos, setPreviewPhotos] = useState<Photo[]>([])
 
-  const previewImages = mockInstagramData.slice(0, 6).map(item => item.url)
+  useEffect(() => {
+    initializePhotosDB()
+    setPreviewPhotos(getRandomPhotos(6))
+  }, [])
 
   useEffect(() => {
     gsap.fromTo('.gallery-preview-item',
@@ -44,30 +48,46 @@ const GalleryPreview = () => {
         </div>
 
         <div ref={galleryRef} className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mb-8 sm:mb-12">
-          {previewImages.map((image, index) => (
+          {previewPhotos.length > 0 ? previewPhotos.map((photo, index) => (
             <div
-              key={index}
+              key={photo.id}
               className="gallery-preview-item group cursor-pointer relative aspect-square overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Image
-                src={image}
-                alt={`Gallery preview ${index + 1}`}
+                src={photo.url}
+                alt={photo.alt}
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = 'https://via.placeholder.com/400x400/374151/9CA3AF?text=No+Image'
+                }}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
             </div>
-          ))}
+          )) : (
+            // Placeholder when no photos available
+            Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="gallery-preview-item aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center"
+              >
+                <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            ))
+          )}
         </div>
 
         <div className="text-center gsap-fade-in">
-          <button
-            onClick={() => window.location.href = '/gallery'}
+          <a
+            href="/gallery"
             className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             View All Photos
             <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
-          </button>
+          </a>
         </div>
       </div>
     </section>

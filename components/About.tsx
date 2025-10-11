@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Award, Camera, Heart, Users } from 'lucide-react'
 import Image from 'next/image'
+import { getAboutImage, initializePhotosDB, type AboutImage } from '@/lib/photos-db'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -12,6 +13,12 @@ const About = () => {
   const aboutRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const [aboutImage, setAboutImage] = useState<AboutImage | null>(null)
+
+  useEffect(() => {
+    initializePhotosDB()
+    setAboutImage(getAboutImage())
+  }, [])
 
   useEffect(() => {
     // Parallax effect for image
@@ -76,10 +83,14 @@ const About = () => {
           <div ref={imageRef} className="relative">
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600"
-                alt="Photographer"
+                src={aboutImage?.url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600'}
+                alt={aboutImage?.alt || 'Photographer'}
                 fill
                 className="object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600'
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>

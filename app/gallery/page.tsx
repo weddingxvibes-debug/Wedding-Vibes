@@ -1,167 +1,129 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import { X, Play, Instagram } from 'lucide-react'
-import Image from 'next/image'
-import { mockInstagramData, MediaItem } from '@/lib/mock-instagram-data'
-
-gsap.registerPlugin(ScrollTrigger)
-
-
+import { useEffect, useState } from 'react'
+import { getPhotoFolders, initializePhotosDB, type PhotoFolder, type Photo } from '@/lib/photos-db'
+import Link from 'next/link'
 
 export default function GalleryPage() {
-  const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const categories = [
-    { id: 'all', name: 'All Media' },
-    { id: 'photography', name: 'Photography' },
-    { id: 'videography', name: 'Videography' }
-  ]
-
-  const filteredItems = selectedCategory === 'all' 
-    ? mediaItems 
-    : mediaItems.filter(item => 
-        selectedCategory === 'photography' ? item.type === 'IMAGE' : item.type === 'VIDEO'
-      )
+  const [folders, setFolders] = useState<PhotoFolder[]>([])
+  const [selectedFolder, setSelectedFolder] = useState<string>('all')
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
 
   useEffect(() => {
-    // Simulate loading time for better UX
-    setTimeout(() => {
-      setMediaItems(mockInstagramData)
-      setLoading(false)
-    }, 1000)
+    initializePhotosDB()
+    setFolders(getPhotoFolders())
   }, [])
 
-  useEffect(() => {
-    gsap.fromTo('.gallery-item',
-      { opacity: 0, scale: 0.8 },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: '.gallery-grid',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse'
-        }
-      }
-    )
-  }, [selectedCategory])
+  const allPhotos = folders.flatMap(folder => folder.photos)
+  const displayPhotos = selectedFolder === 'all' 
+    ? allPhotos 
+    : folders.find(f => f.id === selectedFolder)?.photos || []
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-primary-50 via-pink-50 to-gold-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-800">
-      <Header />
-      
-      <section className="pt-24 pb-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12 sm:mb-16 px-4 sm:px-0">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Photo Gallery
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Explore our collection of beautiful moments captured by Priyanshu Malviya
-            </p>
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-12 px-4 sm:px-0">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium text-sm sm:text-base transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? 'bg-primary-600 text-white shadow-lg'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Gallery Grid */}
-          <div className="gallery-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4 md:gap-6">
-            {loading ? (
-              Array.from({ length: 12 }).map((_, index) => (
-                <div key={index} className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-              ))
-            ) : filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="gallery-item group cursor-pointer relative aspect-square overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => setSelectedItem(item)}
-                >
-                  <Image
-                    src={item.type === 'VIDEO' ? item.thumbnail || item.url : item.url}
-                    alt={item.caption}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                    {item.type === 'VIDEO' ? (
-                      <Play className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    ) : (
-                      <Instagram className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    )}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <p className="text-white font-medium text-sm">{item.caption}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">No media found. Please check Instagram API configuration.</p>
-              </div>
-            )}
+    <div className="min-h-screen bg-gray-900">
+      <nav className="bg-gray-800/50 backdrop-blur-lg border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Link href="/" className="text-xl font-bold text-white hover:text-purple-300 transition-colors">
+                Wedding Vibes
+              </Link>
+            </div>
+            <div className="flex items-center space-x-6">
+              <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
+              <Link href="/about" className="text-gray-300 hover:text-white transition-colors">About</Link>
+              <Link href="/gallery" className="text-white">Gallery</Link>
+              <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link>
+            </div>
           </div>
         </div>
-      </section>
+      </nav>
 
-      {/* Lightbox */}
-      {selectedItem && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-white mb-4">Our Gallery</h1>
+          <p className="text-gray-400 text-lg">Capturing beautiful moments that last forever</p>
+        </div>
+
+        <div className="flex justify-center space-x-2 mb-8">
+          <button
+            onClick={() => setSelectedFolder('all')}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              selectedFolder === 'all'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+            }`}
+          >
+            All Photos
+          </button>
+          {folders.map((folder) => (
+            <button
+              key={folder.id}
+              onClick={() => setSelectedFolder(folder.id)}
+              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+                selectedFolder === folder.id
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+              }`}
+            >
+              {folder.name}
+            </button>
+          ))}
+        </div>
+
+        {displayPhotos.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-300 mb-2">No photos available</h3>
+            <p className="text-gray-500">Photos will appear here once they are added to the gallery</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {displayPhotos.map((photo) => (
+              <div
+                key={photo.id}
+                className="aspect-square bg-gray-800/30 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => setSelectedPhoto(photo)}
+              >
+                <img
+                  src={photo.url}
+                  alt={photo.alt}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.src = 'https://via.placeholder.com/400x400/374151/9CA3AF?text=No+Image'
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {selectedPhoto && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="relative max-w-4xl max-h-full">
             <button
-              onClick={() => setSelectedItem(null)}
+              onClick={() => setSelectedPhoto(null)}
               className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
             >
-              <X className="h-8 w-8" />
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
-            
-            {selectedItem.type === 'VIDEO' ? (
-              <video
-                src={selectedItem.url}
-                controls
-                className="max-w-full max-h-[80vh] rounded-lg"
-                autoPlay
-              />
-            ) : (
-              <Image
-                src={selectedItem.url}
-                alt={selectedItem.caption}
-                width={800}
-                height={600}
-                className="max-w-full max-h-[80vh] object-contain rounded-lg"
-              />
-            )}
-            
-            <p className="text-white text-center mt-4 text-lg">{selectedItem.caption}</p>
+            <img
+              src={selectedPhoto.url}
+              alt={selectedPhoto.alt}
+              className="max-w-full max-h-full object-contain rounded-lg"
+            />
+            <p className="text-white text-center mt-4">{selectedPhoto.alt}</p>
           </div>
         </div>
       )}
-
-      <Footer />
-    </main>
+    </div>
   )
 }
