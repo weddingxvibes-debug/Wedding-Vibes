@@ -1,19 +1,51 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import { getPhotoFolders, initializePhotosDB, type PhotoFolder, type Photo } from '@/lib/photos-db'
-import Link from 'next/link'
+import { getPhotoFolders, initializePhotosDB, type PhotoFolder } from '@/lib/photos-db'
+import Header from '@/components/Header'
+import LightGalleryComponent from '@/components/LightGalleryComponent'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function GalleryPage() {
   const [folders, setFolders] = useState<PhotoFolder[]>([])
   const [selectedFolder, setSelectedFolder] = useState<string>('all')
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    initializePhotosDB()
-    setFolders(getPhotoFolders())
+    const loadGallery = async () => {
+      setLoading(true)
+      await new Promise(resolve => setTimeout(resolve, 800))
+      initializePhotosDB()
+      setFolders(getPhotoFolders())
+      setLoading(false)
+    }
+    
+    loadGallery()
   }, [])
+
+  useEffect(() => {
+    if (!loading) {
+      gsap.fromTo('.gallery-header',
+        { opacity: 0, y: -30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+      )
+      
+      gsap.fromTo('.filter-button',
+        { opacity: 0, scale: 0.8 },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          duration: 0.5, 
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          delay: 0.3
+        }
+      )
+    }
+  }, [loading, folders])
 
   const allPhotos = folders.flatMap(folder => folder.photos)
   const displayPhotos = selectedFolder === 'all' 
@@ -21,38 +53,27 @@ export default function GalleryPage() {
     : folders.find(f => f.id === selectedFolder)?.photos || []
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <nav className="bg-gray-800/50 backdrop-blur-lg border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-white hover:text-purple-300 transition-colors">
-                Wedding Vibes
-              </Link>
-            </div>
-            <div className="flex items-center space-x-6">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
-              <Link href="/about" className="text-gray-300 hover:text-white transition-colors">About</Link>
-              <Link href="/gallery" className="text-white">Gallery</Link>
-              <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-pink-50 to-gold-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-800 transition-colors duration-300">
+      <Header />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Our Gallery</h1>
-          <p className="text-gray-400 text-lg">Capturing beautiful moments that last forever</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+        <div className="text-center mb-12 gallery-header">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold bg-gradient-to-r from-primary-600 via-pink-500 to-gold-500 bg-clip-text text-transparent mb-4">
+            Our Gallery
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+            Capturing beautiful moments that last forever - A collection of our finest wedding photography
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-pink-500 mx-auto mt-6 rounded-full"></div>
         </div>
 
-        <div className="flex justify-center space-x-2 mb-8">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           <button
             onClick={() => setSelectedFolder('all')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+            className={`filter-button px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
               selectedFolder === 'all'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+                ? 'bg-gradient-to-r from-primary-600 to-pink-600 text-white shadow-lg shadow-primary-500/25'
+                : 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700/80 border border-gray-200 dark:border-gray-600'
             }`}
           >
             All Photos
@@ -61,10 +82,10 @@ export default function GalleryPage() {
             <button
               key={folder.id}
               onClick={() => setSelectedFolder(folder.id)}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              className={`filter-button px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
                 selectedFolder === folder.id
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-primary-600 to-pink-600 text-white shadow-lg shadow-primary-500/25'
+                  : 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700/80 border border-gray-200 dark:border-gray-600'
               }`}
             >
               {folder.name}
@@ -72,62 +93,11 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        {displayPhotos.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">No photos available</h3>
-            <p className="text-gray-500">Photos will appear here once they are added to the gallery</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {displayPhotos.map((photo) => (
-              <div
-                key={photo.id}
-                className="aspect-square bg-gray-800/30 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform"
-                onClick={() => setSelectedPhoto(photo)}
-              >
-                <Image
-                  src={photo.url}
-                  alt={photo.alt}
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = 'https://via.placeholder.com/400x400/374151/9CA3AF?text=No+Image'
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        <LightGalleryComponent 
+          photos={displayPhotos} 
+          loading={loading}
+        />
       </div>
-
-      {selectedPhoto && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="relative max-w-4xl max-h-full">
-            <button
-              onClick={() => setSelectedPhoto(null)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
-            >
-              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <Image
-              src={selectedPhoto.url}
-              alt={selectedPhoto.alt}
-              width={800}
-              height={600}
-              className="max-w-full max-h-full object-contain rounded-lg"
-            />
-            <p className="text-white text-center mt-4">{selectedPhoto.alt}</p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

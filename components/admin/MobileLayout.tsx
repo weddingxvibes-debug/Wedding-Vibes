@@ -23,6 +23,7 @@ export default function MobileLayout({ children, activeTab }: MobileLayoutProps)
     { id: 'bookings', label: 'Bookings', icon: '📅', path: '/admin/dashboard/bookings' },
     { id: 'users', label: 'Users', icon: '👥', path: '/admin/dashboard/users' },
     { id: 'photos', label: 'Photos', icon: '📸', path: '/admin/dashboard/photos' },
+    { id: 'google-photos', label: 'Google Photos', icon: '☁️', path: '/admin/dashboard/google-photos' },
     { id: 'calendar', label: 'Calendar', icon: '🗓️', path: '/admin/dashboard/calendar' },
     { id: 'packages', label: 'Packages', icon: '📦', path: '/admin/dashboard/packages' },
     { id: 'gallery', label: 'Gallery', icon: '🖼️', path: '/admin/dashboard/gallery' }

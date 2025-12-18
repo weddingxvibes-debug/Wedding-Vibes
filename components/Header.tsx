@@ -173,13 +173,13 @@ const Header = () => {
               <div className="hidden md:flex items-center space-x-3">
                 <button
                   onClick={() => router.push('/auth/login')}
-                  className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => router.push('/auth/register')}
-                  className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
                 >
                   Sign Up
                 </button>
@@ -264,23 +264,26 @@ const Header = () => {
                       router.push('/auth/login')
                       setIsMenuOpen(false)
                     }}
-                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
                   >
+                    <User className="h-5 w-5 mr-3" />
                     Login
                   </button>
-                  <button
-                    onClick={() => {
-                      router.push('/auth/register')
-                      setIsMenuOpen(false)
-                    }}
-                    className="block w-full text-center px-4 py-2 mx-4 mt-2 bg-primary-600 text-white hover:bg-primary-700 transition-colors rounded-lg"
-                  >
-                    Sign Up
-                  </button>
+                  <div className="px-4 py-2">
+                    <button
+                      onClick={() => {
+                        router.push('/auth/register')
+                        setIsMenuOpen(false)
+                      }}
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-lg font-medium transition-colors text-center"
+                    >
+                      Sign Up
+                    </button>
+                  </div>
                   
                   <button
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mt-2"
+                    className="flex items-center w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     {theme === 'dark' ? <Sun className="h-5 w-5 mr-3" /> : <Moon className="h-5 w-5 mr-3" />}
                     {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
