@@ -46,3 +46,26 @@ export const photos = pgTable('photos', {
   uploadedBy: integer('uploaded_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow()
 })
+
+export const galleryFolders = pgTable('gallery_folders', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  slug: varchar('slug', { length: 100 }).notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow()
+})
+
+export const galleryPhotos = pgTable('gallery_photos', {
+  id: serial('id').primaryKey(),
+  folderId: integer('folder_id').references(() => galleryFolders.id),
+  url: text('url').notNull(),
+  alt: varchar('alt', { length: 255 }).notNull(),
+  category: varchar('category', { length: 100 }),
+  createdAt: timestamp('created_at').defaultNow()
+})
+
+export const aboutImage = pgTable('about_image', {
+  id: serial('id').primaryKey(),
+  url: text('url').notNull(),
+  alt: varchar('alt', { length: 255 }).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow()
+})

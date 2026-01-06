@@ -4,6 +4,9 @@ import { bookings, users } from '@/lib/schema'
 import { sendBookingEmails } from '@/lib/email'
 import { eq } from 'drizzle-orm'
 
+// Force dynamic rendering for routes using request.url
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const { eventType, eventDate, venue, contactNumber, email, message, userId } = await request.json()

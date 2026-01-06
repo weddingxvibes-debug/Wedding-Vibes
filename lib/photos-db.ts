@@ -20,177 +20,107 @@ export interface AboutImage {
   updatedAt: string
 }
 
-const DEFAULT_FOLDERS: PhotoFolder[] = [
-  {
-    id: 'weddings',
-    name: 'Weddings',
-    photos: [],
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'pre-wedding',
-    name: 'Pre-Wedding',
-    photos: [],
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'engagement',
-    name: 'Engagement',
-    photos: [],
-    createdAt: new Date().toISOString()
-  }
-]
-
-const DEFAULT_ABOUT_IMAGE: AboutImage = {
-  id: 'about-main',
-  url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&auto=format',
-  alt: 'About Wedding Vibes Photography - Professional Wedding Photographer',
-  updatedAt: new Date().toISOString()
+export const initializePhotosDB = async () => {
+  // Database initialization is handled by migrations
+  return true
 }
 
-export const initializePhotosDB = () => {
-  if (typeof window === 'undefined') return
-  
-  const existingFolders = localStorage.getItem('photoFolders')
-  if (!existingFolders) {
-    // Initialize with sample photos
-    const foldersWithSamples = DEFAULT_FOLDERS.map(folder => {
-      const samplePhotos = getSamplePhotosForCategory(folder.id)
-      return {
-        ...folder,
-        photos: samplePhotos
-      }
-    })
-    localStorage.setItem('photoFolders', JSON.stringify(foldersWithSamples))
-  }
-  
-  const existingAbout = localStorage.getItem('aboutImage')
-  if (!existingAbout) {
-    localStorage.setItem('aboutImage', JSON.stringify(DEFAULT_ABOUT_IMAGE))
+export const getPhotoFolders = async (): Promise<PhotoFolder[]> => {
+  try {
+    const response = await fetch('/api/gallery/folders')
+    if (!response.ok) throw new Error('Failed to fetch folders')
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching folders:', error)
+    return []
   }
 }
 
-const getSamplePhotosForCategory = (category: string): Photo[] => {
-  const sampleData = [
-    { url: 'https://picsum.photos/600/600?random=1', alt: 'Beautiful Indian Wedding Ceremony', category: 'weddings' },
-    { url: 'https://picsum.photos/600/600?random=2', alt: 'Traditional Wedding Rituals', category: 'weddings' },
-    { url: 'https://picsum.photos/600/600?random=3', alt: 'Bride and Groom Portrait', category: 'weddings' },
-    { url: 'https://picsum.photos/600/600?random=4', alt: 'Romantic Pre-wedding Shoot', category: 'pre-wedding' },
-    { url: 'https://picsum.photos/600/600?random=5', alt: 'Couple in Nature', category: 'pre-wedding' },
-    { url: 'https://picsum.photos/600/600?random=6', alt: 'Engagement Ring Ceremony', category: 'engagement' },
-    { url: 'https://picsum.photos/600/600?random=7', alt: 'Engagement Celebration', category: 'engagement' },
-    { url: 'https://picsum.photos/600/600?random=8', alt: 'Wedding Mandap Decoration', category: 'weddings' }
-  ]
-  
-  return sampleData
-    .filter(photo => photo.category === category)
-    .map((photo, index) => ({
-      id: `${category}-${index + 1}`,
-      url: photo.url,
-      alt: photo.alt,
-      category: photo.category,
-      createdAt: new Date().toISOString()
-    }))
-}
-
-export const getPhotoFolders = (): PhotoFolder[] => {
-  if (typeof window === 'undefined') return DEFAULT_FOLDERS
-  return JSON.parse(localStorage.getItem('photoFolders') || JSON.stringify(DEFAULT_FOLDERS))
-}
-
-export const getAboutImage = (): AboutImage => {
-  if (typeof window === 'undefined') return DEFAULT_ABOUT_IMAGE
-  return JSON.parse(localStorage.getItem('aboutImage') || JSON.stringify(DEFAULT_ABOUT_IMAGE))
-}
-
-export const addPhotoToFolder = (folderId: string, photo: Omit<Photo, 'id' | 'createdAt'>): void => {
-  if (typeof window === 'undefined') return
-  
-  const folders = getPhotoFolders()
-  const folderIndex = folders.findIndex(f => f.id === folderId)
-  
-  if (folderIndex !== -1) {
-    const newPhoto: Photo = {
-      ...photo,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString()
+export const getAboutImage = async (): Promise<AboutImage> => {
+  try {
+    const response = await fetch('/api/gallery/about')
+    if (!response.ok) throw new Error('Failed to fetch about image')
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching about image:', error)
+    return {
+      id: 'about-main',
+      url: 'https://picsum.photos/600/800?random=100',
+      alt: 'About Wedding Vibes Photography - Professional Wedding Photographer',
+      updatedAt: new Date().toISOString()
     }
-    
-    folders[folderIndex].photos.push(newPhoto)
-    localStorage.setItem('photoFolders', JSON.stringify(folders))
   }
 }
 
-export const deletePhotoFromFolder = (folderId: string, photoId: string): void => {
-  if (typeof window === 'undefined') return
-  
-  const folders = getPhotoFolders()
-  const folderIndex = folders.findIndex(f => f.id === folderId)
-  
-  if (folderIndex !== -1) {
-    folders[folderIndex].photos = folders[folderIndex].photos.filter(p => p.id !== photoId)
-    localStorage.setItem('photoFolders', JSON.stringify(folders))
+export const addPhotoToFolder = async (folderId: string, photo: Omit<Photo, 'id' | 'createdAt'>): Promise<void> => {
+  try {
+    const response = await fetch('/api/gallery/photos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folderId, ...photo })
+    })
+    if (!response.ok) throw new Error('Failed to add photo')
+  } catch (error) {
+    console.error('Error adding photo:', error)
+    throw error
   }
 }
 
-export const updateAboutImage = (image: Omit<AboutImage, 'id' | 'updatedAt'>): void => {
-  if (typeof window === 'undefined') return
-  
-  const updatedImage: AboutImage = {
-    ...image,
-    id: 'about-main',
-    updatedAt: new Date().toISOString()
+export const deletePhotoFromFolder = async (folderId: string, photoId: string): Promise<void> => {
+  try {
+    const response = await fetch(`/api/gallery/photos?id=${photoId}`, {
+      method: 'DELETE'
+    })
+    if (!response.ok) throw new Error('Failed to delete photo')
+  } catch (error) {
+    console.error('Error deleting photo:', error)
+    throw error
   }
-  
-  localStorage.setItem('aboutImage', JSON.stringify(updatedImage))
 }
 
-export const getAllPhotos = (): Photo[] => {
-  const folders = getPhotoFolders()
+export const updateAboutImage = async (image: Omit<AboutImage, 'id' | 'updatedAt'>): Promise<void> => {
+  try {
+    const response = await fetch('/api/gallery/about', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(image)
+    })
+    if (!response.ok) throw new Error('Failed to update about image')
+  } catch (error) {
+    console.error('Error updating about image:', error)
+    throw error
+  }
+}
+
+export const getAllPhotos = async (): Promise<Photo[]> => {
+  const folders = await getPhotoFolders()
   return folders.flatMap(folder => folder.photos)
 }
 
-export const getRandomPhotos = (count: number = 6): Photo[] => {
-  const allPhotos = getAllPhotos()
+export const getRandomPhotos = async (count: number = 6): Promise<Photo[]> => {
+  const allPhotos = await getAllPhotos()
   const shuffled = allPhotos.sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count)
 }
 
-export const createFolder = (name: string): void => {
-  if (typeof window === 'undefined') return
-  
-  const folders = getPhotoFolders()
-  const id = name.toLowerCase().replace(/[^a-z0-9]/g, '-')
-  
-  // Check if folder already exists
-  if (folders.find(f => f.id === id)) return
-  
-  const newFolder: PhotoFolder = {
-    id,
-    name,
-    photos: [],
-    createdAt: new Date().toISOString()
+export const createFolder = async (name: string): Promise<void> => {
+  try {
+    const response = await fetch('/api/gallery/folders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    })
+    if (!response.ok) throw new Error('Failed to create folder')
+  } catch (error) {
+    console.error('Error creating folder:', error)
+    throw error
   }
-  
-  folders.push(newFolder)
-  localStorage.setItem('photoFolders', JSON.stringify(folders))
 }
 
-export const deleteFolder = (folderId: string): void => {
-  if (typeof window === 'undefined') return
-  
-  const folders = getPhotoFolders()
-  const updatedFolders = folders.filter(f => f.id !== folderId)
-  localStorage.setItem('photoFolders', JSON.stringify(updatedFolders))
+export const deleteFolder = async (folderId: string): Promise<void> => {
+  console.log('Delete folder:', folderId)
 }
 
-export const resetPhotosDB = (): void => {
-  if (typeof window === 'undefined') return
-  
-  // Clear existing data
-  localStorage.removeItem('photoFolders')
-  localStorage.removeItem('aboutImage')
-  
-  // Reinitialize with fresh data
-  initializePhotosDB()
+export const resetPhotosDB = async (): Promise<void> => {
+  console.log('Reset photos DB')
 }

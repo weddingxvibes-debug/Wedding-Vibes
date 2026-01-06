@@ -37,9 +37,17 @@ export default function PhotosPage() {
     }
   }, [router])
 
-  const loadData = () => {
-    setFolders(getPhotoFolders())
-    setAboutImage(getAboutImage())
+  const loadData = async () => {
+    try {
+      const [foldersData, aboutData] = await Promise.all([
+        getPhotoFolders(),
+        getAboutImage()
+      ])
+      setFolders(foldersData)
+      setAboutImage(aboutData)
+    } catch (error) {
+      console.error('Error loading data:', error)
+    }
   }
 
   if (!isAuthenticated || loading) {
@@ -57,13 +65,29 @@ export default function PhotosPage() {
         <div className="space-y-4 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold text-white">Photo Folders</h3>
-            <button
-              onClick={() => setShowCreateFolder(!showCreateFolder)}
-              className="px-3 py-2 bg-green-600/20 text-green-400 rounded-xl text-sm font-medium border border-green-600/30 hover:bg-green-600/30 transition-all flex items-center space-x-2"
-            >
-              <span>➕</span>
-              <span>New Folder</span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  if (confirm('Reset all photos to default samples? This cannot be undone.')) {
+                    localStorage.removeItem('photoFolders')
+                    localStorage.removeItem('aboutImage')
+                    initializePhotosDB()
+                    loadData()
+                  }
+                }}
+                className="px-3 py-2 bg-red-600/20 text-red-400 rounded-xl text-sm font-medium border border-red-600/30 hover:bg-red-600/30 transition-all flex items-center space-x-2"
+              >
+                <span>🔄</span>
+                <span>Reset</span>
+              </button>
+              <button
+                onClick={() => setShowCreateFolder(!showCreateFolder)}
+                className="px-3 py-2 bg-green-600/20 text-green-400 rounded-xl text-sm font-medium border border-green-600/30 hover:bg-green-600/30 transition-all flex items-center space-x-2"
+              >
+                <span>➕</span>
+                <span>New Folder</span>
+              </button>
+            </div>
           </div>
           
           {showCreateFolder && (
@@ -85,12 +109,16 @@ export default function PhotosPage() {
                   }}
                 />
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (newFolderName.trim()) {
-                      createFolder(newFolderName.trim())
-                      loadData()
-                      setNewFolderName('')
-                      setShowCreateFolder(false)
+                      try {
+                        await createFolder(newFolderName.trim())
+                        await loadData()
+                        setNewFolderName('')
+                        setShowCreateFolder(false)
+                      } catch (error) {
+                        alert('Failed to create folder')
+                      }
                     }
                   }}
                   disabled={!newFolderName.trim()}
@@ -251,12 +279,16 @@ export default function PhotosPage() {
                 />
               </div>
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (newAboutUrl && newAboutAlt) {
-                    updateAboutImage({ url: newAboutUrl, alt: newAboutAlt })
-                    loadData()
-                    setNewAboutUrl('')
-                    setNewAboutAlt('')
+                    try {
+                      await updateAboutImage({ url: newAboutUrl, alt: newAboutAlt })
+                      await loadData()
+                      setNewAboutUrl('')
+                      setNewAboutAlt('')
+                    } catch (error) {
+                      alert('Failed to update about image')
+                    }
                   }
                 }}
                 disabled={uploading || !newAboutUrl || !newAboutAlt}
@@ -365,16 +397,20 @@ export default function PhotosPage() {
                 </div>
               </div>
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (newPhotoUrl && newPhotoAlt && selectedFolder !== 'about') {
-                    addPhotoToFolder(selectedFolder, {
-                      url: newPhotoUrl,
-                      alt: newPhotoAlt,
-                      category: selectedFolder
-                    })
-                    loadData()
-                    setNewPhotoUrl('')
-                    setNewPhotoAlt('')
+                    try {
+                      await addPhotoToFolder(selectedFolder, {
+                        url: newPhotoUrl,
+                        alt: newPhotoAlt,
+                        category: selectedFolder
+                      })
+                      await loadData()
+                      setNewPhotoUrl('')
+                      setNewPhotoAlt('')
+                    } catch (error) {
+                      alert('Failed to add photo')
+                    }
                   }
                 }}
                 disabled={uploading || !newPhotoUrl || !newPhotoAlt}
@@ -426,10 +462,14 @@ export default function PhotosPage() {
                   <div className="p-3">
                     <p className="text-gray-300 text-xs mb-2 line-clamp-2">{photo.alt}</p>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         if (confirm('Delete this photo?')) {
-                          deletePhotoFromFolder(selectedFolder, photo.id)
-                          loadData()
+                          try {
+                            await deletePhotoFromFolder(selectedFolder, photo.id)
+                            await loadData()
+                          } catch (error) {
+                            alert('Failed to delete photo')
+                          }
                         }
                       }}
                       className="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 px-2 py-2 rounded-lg text-xs font-medium transition-all border border-red-600/30 hover:border-red-500/50 active:scale-95 flex items-center justify-center space-x-1"

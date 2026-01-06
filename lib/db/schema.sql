@@ -25,6 +25,30 @@ CREATE TABLE google_albums (
   created_at timestamptz DEFAULT now()
 );
 
+-- Create missing gallery tables
+CREATE TABLE IF NOT EXISTS gallery_folders (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  slug VARCHAR(100) NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS gallery_photos (
+  id SERIAL PRIMARY KEY,
+  folder_id INTEGER REFERENCES gallery_folders(id),
+  url TEXT NOT NULL,
+  alt VARCHAR(255) NOT NULL,
+  category VARCHAR(100),
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS about_image (
+  id SERIAL PRIMARY KEY,
+  url TEXT NOT NULL,
+  alt VARCHAR(255) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- Update photos table to include Google Photos metadata
 ALTER TABLE photos ADD COLUMN IF NOT EXISTS google_media_id TEXT UNIQUE;
 ALTER TABLE photos ADD COLUMN IF NOT EXISTS google_album_id uuid REFERENCES google_albums(id);

@@ -5,9 +5,15 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Award, Camera, Heart, Users } from 'lucide-react'
 import Image from 'next/image'
-import { getAboutImage, initializePhotosDB, type AboutImage } from '@/lib/photos-db'
 
 gsap.registerPlugin(ScrollTrigger)
+
+interface AboutImage {
+  id: string
+  url: string
+  alt: string
+  updatedAt: string
+}
 
 const About = () => {
   const aboutRef = useRef<HTMLDivElement>(null)
@@ -16,8 +22,19 @@ const About = () => {
   const [aboutImage, setAboutImage] = useState<AboutImage | null>(null)
 
   useEffect(() => {
-    initializePhotosDB()
-    setAboutImage(getAboutImage())
+    const fetchAboutImage = async () => {
+      try {
+        const response = await fetch('/api/gallery/about')
+        if (response.ok) {
+          const data = await response.json()
+          setAboutImage(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch about image:', error)
+      }
+    }
+    
+    fetchAboutImage()
   }, [])
 
   useEffect(() => {

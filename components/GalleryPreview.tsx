@@ -4,10 +4,17 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight } from 'lucide-react'
-import { getRandomPhotos, initializePhotosDB, type Photo } from '@/lib/photos-db'
 import ResponsiveGalleryCarousel from './ResponsiveGalleryCarousel'
 
 gsap.registerPlugin(ScrollTrigger)
+
+interface Photo {
+  id: string
+  url: string
+  alt: string
+  category: string
+  createdAt: string
+}
 
 const GalleryPreview = () => {
   const galleryRef = useRef<HTMLDivElement>(null)
@@ -17,10 +24,19 @@ const GalleryPreview = () => {
   useEffect(() => {
     const loadPhotos = async () => {
       setLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 500))
-      initializePhotosDB()
-      setPreviewPhotos(getRandomPhotos(8))
-      setLoading(false)
+      try {
+        const response = await fetch('/api/gallery/folders')
+        if (response.ok) {
+          const folders = await response.json()
+          const allPhotos = folders.flatMap((folder: any) => folder.photos)
+          const randomPhotos = allPhotos.sort(() => 0.5 - Math.random()).slice(0, 8)
+          setPreviewPhotos(randomPhotos)
+        }
+      } catch (error) {
+        console.error('Failed to fetch photos:', error)
+      } finally {
+        setLoading(false)
+      }
     }
     
     loadPhotos()

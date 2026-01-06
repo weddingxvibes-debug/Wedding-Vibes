@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { neon } from '@neondatabase/serverless'
 
+// Force dynamic rendering for admin routes
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     console.log('=== ADMIN BOOKINGS API ===')  

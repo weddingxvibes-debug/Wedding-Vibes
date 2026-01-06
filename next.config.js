@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['instagram.com', 'scontent.cdninstagram.com', 'images.unsplash.com', 'via.placeholder.com', 'picsum.photos'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -22,6 +21,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'photoslibrary.googleapis.com',
       }
     ]
   }

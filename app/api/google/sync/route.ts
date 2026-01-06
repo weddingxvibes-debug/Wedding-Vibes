@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getGoogleAlbums, refreshAccessToken, updateGoogleTokens, upsertPhotosForAlbum, markAlbumSynced } from '@/lib/google-photos'
 
+// Force dynamic rendering for OAuth routes
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const albums = await getGoogleAlbums()

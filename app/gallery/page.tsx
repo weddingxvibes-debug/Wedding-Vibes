@@ -1,13 +1,27 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getPhotoFolders, initializePhotosDB, type PhotoFolder } from '@/lib/photos-db'
 import Header from '@/components/Header'
 import LightGalleryComponent from '@/components/LightGalleryComponent'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
+
+interface Photo {
+  id: string
+  url: string
+  alt: string
+  category: string
+  createdAt: string
+}
+
+interface PhotoFolder {
+  id: string
+  name: string
+  photos: Photo[]
+  createdAt: string
+}
 
 export default function GalleryPage() {
   const [folders, setFolders] = useState<PhotoFolder[]>([])
@@ -17,10 +31,17 @@ export default function GalleryPage() {
   useEffect(() => {
     const loadGallery = async () => {
       setLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 800))
-      initializePhotosDB()
-      setFolders(getPhotoFolders())
-      setLoading(false)
+      try {
+        const response = await fetch('/api/gallery/folders')
+        if (response.ok) {
+          const foldersData = await response.json()
+          setFolders(foldersData)
+        }
+      } catch (error) {
+        console.error('Failed to fetch folders:', error)
+      } finally {
+        setLoading(false)
+      }
     }
     
     loadGallery()
