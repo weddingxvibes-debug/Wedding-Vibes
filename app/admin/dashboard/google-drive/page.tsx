@@ -44,30 +44,43 @@ export default function GoogleDrivePage() {
     }
   }
 
-  const handleGoogleConnect = () => {
-    // Use a simpler OAuth flow that works with existing Google setup
-    const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.readonly')
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    const redirectUri = encodeURIComponent(`${window.location.origin}/api/google/callback`)
-    
-    if (!clientId) {
-      toast.error('Google Client ID not configured')
-      return
-    }
-    
-    const authUrl = `https://accounts.google.com/oauth/authorize?` +
-      `client_id=${clientId}&` +
-      `redirect_uri=${redirectUri}&` +
-      `scope=${scope}&` +
-      `response_type=code&` +
-      `access_type=offline&` +
-      `prompt=consent`
-    
-    console.log('OAuth URL:', authUrl)
-    window.open(authUrl, '_blank', 'width=500,height=600')
-  }
+    const handleGoogleConnect = () => {
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
-  const handleAddFolder = async (e: React.FormEvent) => {
+        if (!clientId) {
+            toast.error('Google Client ID not configured')
+            return
+        }
+
+        const scope = encodeURIComponent(
+            'https://www.googleapis.com/auth/drive.readonly'
+        )
+
+        const redirectUri = encodeURIComponent(
+            `${window.location.origin}/api/google/callback`
+        )
+
+        // CSRF protection
+        const state = crypto.randomUUID()
+
+        const authUrl =
+            `https://accounts.google.com/o/oauth2/v2/auth?` +
+            `client_id=${clientId}&` +
+            `redirect_uri=${redirectUri}&` +
+            `scope=${scope}&` +
+            `response_type=code&` +
+            `access_type=offline&` +
+            `prompt=consent&` +
+            `state=${state}`
+
+        console.log('Google OAuth URL:', authUrl)
+
+        // Redirect instead of popup to avoid blockers
+        window.location.href = authUrl
+    }
+
+
+    const handleAddFolder = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       const response = await fetch('/api/google/drive/folders', {
