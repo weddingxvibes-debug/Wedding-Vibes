@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Send emails
     await sendBookingEmails({
       userEmail: email,
-      adminEmail: 'udaydeshmukh248@gmail.com',
+      adminEmail: 'weddingxvibes@gmail.com',
       bookingDetails: {
         id: newBooking.id,
         eventType,

@@ -97,8 +97,8 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: ['info@weddingvibes.com', 'bookings@weddingvibes.com'],
-      action: 'mailto:info@weddingvibes.com'
+      details: ['weddingxvibes@gmail.com', 'bookings@weddingxvibes.gmail.com'],
+      action: 'mailto:weddingxvibes@gmail.com'
     },
     {
       icon: MapPin,

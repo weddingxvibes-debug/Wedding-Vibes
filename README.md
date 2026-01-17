@@ -77,7 +77,7 @@ A comprehensive wedding photography business management platform built with Next
    - **User Bookings**: `http://localhost:3000/my-bookings`
    - **Admin Dashboard**: `http://localhost:3000/admin`
    - **Admin Credentials**: 
-     - Email: `udaypawar004@gmail.com`
+     - Email: `weddingxvibes@gmail.com`
      - Password: `Uday@123`
 
 ## 🎨 Customization
@@ -280,7 +280,7 @@ wedding-vibes-photography/
 ## 📞 Support & Contact
 
 **Wedding Vibes Photography**
-- 📧 Email: priyanshu@weddingvibes.com
+- 📧 Email: weddingxvibes@gmail.com
 - 📱 Phone: +91-9425383179
 - 📍 Location: Betul, Madhya Pradesh, India
 - 📷 Instagram: @wedding_vibes_rp

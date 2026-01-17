@@ -8,7 +8,7 @@ interface AdminUser {
 
 const DEFAULT_ADMIN: AdminUser = {
   id: 'admin-1',
-  email: 'udaypawar004@gmail.com',
+  email: 'weddingxvibes@gmail.com',
   password: 'Uday@123',
   role: 'admin',
   createdAt: new Date().toISOString()

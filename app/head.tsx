@@ -13,7 +13,7 @@ export default function Head() {
       <meta name="business:contact_data:postal_code" content="460001" />
       <meta name="business:contact_data:country_name" content="India" />
       <meta name="business:contact_data:phone_number" content="+91-9425383179" />
-      <meta name="business:contact_data:email" content="priyanshu@weddingvibes.com" />
+      <meta name="business:contact_data:email" content="weddingxvibes@gmail.com" />
       <meta name="business:contact_data:website" content="https://weddingvibes.com" />
       
       {/* Geographic Tags */}
@@ -32,7 +32,7 @@ export default function Head() {
       
       {/* Contact Information */}
       <meta name="contact:phone" content="+91-9425383179" />
-      <meta name="contact:email" content="priyanshu@weddingvibes.com" />
+      <meta name="contact:email" content="weddingxvibes@gmail.com" />
       <meta name="contact:address" content="Betul, Madhya Pradesh, India" />
       
       {/* Social Media */}
@@ -138,7 +138,7 @@ export default function Head() {
               "longitude": 77.9036
             },
             "telephone": "+91-9425383179",
-            "email": "priyanshu@weddingvibes.com",
+            "email": "weddingxvibes@gmail.com",
             "url": "https://weddingvibes.com",
             "sameAs": [
               "https://instagram.com/wedding_vibes_rp",

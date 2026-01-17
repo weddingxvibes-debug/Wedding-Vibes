@@ -141,7 +141,7 @@ export const sendApprovalEmail = async (userEmail: string, booking: any, status:
             <p><strong>Date:</strong> ${booking.date}</p>
             <p><strong>Venue:</strong> ${booking.venue}</p>
           </div>
-          ${status === 'rejected' ? '<p>For any questions, please contact us at udaydeshmukh248@gmail.com</p>' : ''}
+          ${status === 'rejected' ? '<p>For any questions, please contact us at weddingxvibes@gmail.com</p>' : ''}
         </div>
       `
     })
